@@ -74,3 +74,9 @@
 - `mesh.py`: メッシュのクリーンアップ、分割、コンポーネント分離。
 - `armature.py`: ボーン操作、ポーズ行列計算、Hips調整。
 - `blendshapes.py`: BlendShapeの管理、同期、遷移。
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [システム概要 (Overview)](../architecture/overview.md)

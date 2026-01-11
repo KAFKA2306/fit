@@ -21,4 +21,10 @@
 ---
 
 ## 関連記事
-- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](file:///home/kafka/projects/fit/docs/note/rbf_intuition.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](rbf_intuition.md)
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [技術解説 (Math Guide)](../math/smoothing.md)

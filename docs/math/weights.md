@@ -120,3 +120,9 @@ parent_map = get_bone_parent_map(bone_hierarchy)
 | 頂点ウェイト | 頂点がボーンに追従する度合い（0.0〜1.0） |
 | 頂点グループ | Blenderでのウェイト管理単位 |
 | デフォームボーン | メッシュ変形に使用するボーン |
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [技術解説 (Math Guide)](geometry.md)

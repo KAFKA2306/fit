@@ -58,6 +58,12 @@
 ---
 
 ## 関連記事
-- [プロジェクトコンセプト（背景）](file:///home/kafka/projects/fit/docs/note/project_concept.md)
-- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~（次のステップ）](file:///home/kafka/projects/fit/docs/note/rbf_intuition.md)
-- [靴が「くしゃっ」とならない理由：ウェイト統合（応用編）](file:///home/kafka/projects/fit/docs/note/consolidation_intuition.md)
+- [プロジェクトコンセプト（背景）](project_concept.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~（次のステップ）](rbf_intuition.md)
+- [靴が「くしゃっ」とならない理由：ウェイト統合（応用編）](consolidation_intuition.md)
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [技術解説 (Math Guide)](../math/geometry.md)

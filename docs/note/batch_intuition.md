@@ -25,11 +25,12 @@
 
 ---
 
-## 関連記事（直感シリーズ 全編）
-- [プロジェクトコンセプト](file:///home/kafka/projects/fit/docs/note/project_concept.md)
-- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](file:///home/kafka/projects/fit/docs/note/obb_intuition.md)
-- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](file:///home/kafka/projects/fit/docs/note/rbf_intuition.md)
-- [透明な「糸」の話：ウェイト転送](file:///home/kafka/projects/fit/docs/note/weights_intuition.md)
-- [靴が「くしゃっ」とならない理由：ウェイト統合](file:///home/kafka/projects/fit/docs/note/consolidation_intuition.md)
-- [服が「痩せる」仕組み：シェイプキー同期](file:///home/kafka/projects/fit/docs/note/shapekeys_intuition.md)
-- [「ギザギザ」を消す技術：スムージング](file:///home/kafka/projects/fit/docs/note/smoothing_intuition.md)
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [プロジェクトコンセプト](project_concept.md)
+- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](obb_intuition.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](rbf_intuition.md)
+- [透明な「糸」の話：ウェイト転送](weights_intuition.md)
+- [靴が「くしゃっ」とならない理由：ウェイト統合](consolidation_intuition.md)
+- [服が「痩せる」仕組み：シェイプキー同期](shapekeys_intuition.md)
+- [「ギザギザ」を消す技術：スムージング](smoothing_intuition.md)

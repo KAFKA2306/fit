@@ -25,5 +25,10 @@ Unityでアバターの手足を動かすとき、普通は服のシェイプキ
 ---
 
 ## 関連記事
-- [プロジェクトコンセプト](file:///home/kafka/projects/fit/docs/note/project_concept.md)
-- [透明な「糸」の話：ウェイト転送](file:///home/kafka/projects/fit/docs/note/weights_intuition.md)
+- [プロジェクトコンセプト](project_concept.md)
+- [透明な「糸」の話：ウェイト転送](weights_intuition.md)
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)

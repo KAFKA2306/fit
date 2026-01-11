@@ -73,3 +73,10 @@ flowchart LR
     C --> D["空ウェイト<br/>頂点検出"]
     D --> E["隣接頂点から<br/>ウェイト伝播"]
 ```
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [システム概要 (Overview)](overview.md)
+- [ウェイト計算 (Math Guide)](../math/weights.md)

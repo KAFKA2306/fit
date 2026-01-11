@@ -132,3 +132,9 @@ deformation_mask.add([vert.index], weight_sum, "REPLACE")
 | 中央値 | ソート済みデータの中央の値 |
 | 三角形化 | N角形を三角形に分割 |
 | 変形マスク | 頂点の変形適用度を示すウェイト |
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [技術解説 (Math Guide)](geometry.md)

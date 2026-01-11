@@ -46,3 +46,10 @@ SVDで大まかな位置を合わせた後、細部をRBFで変形します。
 | OBB | 形と向きの検出 |
 | SVD | 大まかな位置合わせ (位置・回転・サイズ) |
 | RBF | 高品質な細部変形 (自動フィッティング) |
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [システム概要 (Overview)](../architecture/overview.md)
+- [直感シリーズ (Intuition Series)](../note/project_concept.md)

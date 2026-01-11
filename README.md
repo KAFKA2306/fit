@@ -60,8 +60,10 @@ task run
   - blendshapes.py: シェイプキー制御
 
 ### ドキュメント (docs/)
-- Architecture: システム構成およびフロー
-- Math Guide: 数学アルゴリズムの解説
+- [ドキュメント目次](file:///home/kafka/projects/fit/docs/README.md)
+- [Architecture](file:///home/kafka/projects/fit/docs/architecture/overview.md): システム構成およびフロー
+- [Math Guide](file:///home/kafka/projects/fit/docs/math/geometry.md): 数学アルゴリズムの解説
+- [直感シリーズ (Intuition Series)](file:///home/kafka/projects/fit/docs/note/project_concept.md): 各機能の直感的解説
 
 ---
 

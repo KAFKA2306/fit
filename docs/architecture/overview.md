@@ -96,3 +96,10 @@ flowchart TB
 | Infra | `geometry.py` | RBF変形・相似変換計算 | `batch_process_vertices_multi_step` |
 | Infra | `blendshapes.py` | BlendShape同期・正規化 | `sync_shape_key_names_from_file` |
 | Infra | `ops.py` | Blender基本操作ラッパー | `apply_y_rotation_to_bone` |
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [数学的アルゴリズム (Math Guide)](../math/geometry.md)
+- [直感シリーズ (Intuition Series)](../note/project_concept.md)

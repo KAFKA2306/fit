@@ -38,6 +38,12 @@
 ---
 
 ## 関連記事
-- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](file:///home/kafka/projects/fit/docs/note/rbf_intuition.md)
-- [靴が「くしゃっ」とならない理由：ウェイト統合（発展編）](file:///home/kafka/projects/fit/docs/note/consolidation_intuition.md)
-- [服が「痩せる」仕組み：シェイプキー同期](file:///home/kafka/projects/fit/docs/note/shapekeys_intuition.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](rbf_intuition.md)
+- [靴が「くしゃっ」とならない理由：ウェイト統合（発展編）](consolidation_intuition.md)
+- [服が「痩せる」仕組み：シェイプキー同期](shapekeys_intuition.md)
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [技術解説 (Math Guide)](../math/weights.md)

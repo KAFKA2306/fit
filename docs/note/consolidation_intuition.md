@@ -23,5 +23,11 @@
 ---
 
 ## 関連記事
-- [透明な「糸」の話：ウェイト転送（基本概念）](file:///home/kafka/projects/fit/docs/note/weights_intuition.md)
-- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](file:///home/kafka/projects/fit/docs/note/obb_intuition.md)
+- [透明な「糸」の話：ウェイト転送（基本概念）](weights_intuition.md)
+- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](obb_intuition.md)
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [技術解説 (Math Guide)](../math/weights.md)

@@ -130,3 +130,9 @@ bm.transform(obj.matrix_world)  # ワールド座標に変換
 | depsgraph | Blenderの依存関係グラフ |
 | pose_bone | ポーズモードでのボーン |
 | edit_bone | 編集モードでのボーン |
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [技術解説 (Math Guide)](geometry.md)

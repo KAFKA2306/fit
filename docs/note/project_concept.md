@@ -49,6 +49,12 @@
 ---
 
 ## 関連記事
-- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](file:///home/kafka/projects/fit/docs/note/obb_intuition.md)
-- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](file:///home/kafka/projects/fit/docs/note/rbf_intuition.md)
-- [100着を寝ている間に：バッチ処理](file:///home/kafka/projects/fit/docs/note/batch_intuition.md)
+- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](obb_intuition.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](rbf_intuition.md)
+- [100着を寝ている間に：バッチ処理](batch_intuition.md)
+
+---
+
+## ナビゲーション
+- [ドキュメント目次](../README.md)
+- [システム概要 (Overview)](../architecture/overview.md)
