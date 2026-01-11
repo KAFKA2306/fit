@@ -1,0 +1,26 @@
+# Python-generated files
+*cache*
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+*env*
+
+# IDE and Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Blender
+*.blend1
+*.blend@
+*.blend
+
+# Logs and temporary files
+*.log
+tmp/
+outputs/
