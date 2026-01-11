@@ -21,3 +21,9 @@ Unityでアバターの手足を動かすとき、普通は服のシェイプキ
 
 あなたが「体型変更ダイヤル」を回せば、服もまるで「魔法の布」のように、そのサイズに合わせて伸縮します。
 ボタンひとつで、SサイズからXXLサイズまで自由自在に対応できる服が出来上がるのです。
+
+---
+
+## 関連記事
+- [プロジェクトコンセプト](file:///home/kafka/projects/fit/docs/note/project_concept.md)
+- [透明な「糸」の話：ウェイト転送](file:///home/kafka/projects/fit/docs/note/weights_intuition.md)

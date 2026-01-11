@@ -34,3 +34,10 @@
 足の指の細かい動きは靴に伝えないようにしたり、誰もいない空間にある頂点は隣から情報を分けてもらったり。
 
 結果として、まるで「見えない磁石」で吸い付いているかのような、自然な追従が実現するのです。
+
+---
+
+## 関連記事
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](file:///home/kafka/projects/fit/docs/note/rbf_intuition.md)
+- [靴が「くしゃっ」とならない理由：ウェイト統合（発展編）](file:///home/kafka/projects/fit/docs/note/consolidation_intuition.md)
+- [服が「痩せる」仕組み：シェイプキー同期](file:///home/kafka/projects/fit/docs/note/shapekeys_intuition.md)

@@ -19,3 +19,9 @@
 しかし今のバージョンでは、先ほど説明した「箱 (OBB)」の仕組みを使って、身体から少し離れている硬そうなパーツを自動で検知し、勝手にこの処理を適用します。
 
 なので、皆さんは何も考えずにリターゲットを実行するだけで、型崩れしない綺麗な靴を手に入れることができます。
+
+---
+
+## 関連記事
+- [透明な「糸」の話：ウェイト転送（基本概念）](file:///home/kafka/projects/fit/docs/note/weights_intuition.md)
+- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](file:///home/kafka/projects/fit/docs/note/obb_intuition.md)

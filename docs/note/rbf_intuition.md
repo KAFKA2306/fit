@@ -40,3 +40,10 @@ RBFは、「ゴムのシート」をイメージすると分かりやすいで�
 *   自然な曲線: 胸や腰のラインに沿って、布が綺麗に流れます。
 
 「なんかこのツール、変形が綺麗だな」と思ったら、裏でRBFが頑張っているんだな、と思い出してください。
+
+---
+
+## 関連記事
+- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](file:///home/kafka/projects/fit/docs/note/obb_intuition.md)
+- [透明な「糸」の話：ウェイト転送（次のステップ）](file:///home/kafka/projects/fit/docs/note/weights_intuition.md)
+- [「ギザギザ」を消す技術：スムージング](file:///home/kafka/projects/fit/docs/note/smoothing_intuition.md)

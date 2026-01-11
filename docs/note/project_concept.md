@@ -45,3 +45,10 @@
 ## ✨ ひとことで言うと
 
 「数学の力を使って、手作業のような丁寧さで、衣装を自動フィッティングするシステム」 です。
+
+---
+
+## 関連記事
+- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](file:///home/kafka/projects/fit/docs/note/obb_intuition.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](file:///home/kafka/projects/fit/docs/note/rbf_intuition.md)
+- [100着を寝ている間に：バッチ処理](file:///home/kafka/projects/fit/docs/note/batch_intuition.md)

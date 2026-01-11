@@ -54,3 +54,10 @@
 しかしこのシステムなら、バックルは「硬いまま」、ベルトの革部分だけが「伸びる」という、現実と同じ挙動になります。
 
 皆さんが何も設定しなくても、ツールが勝手に「箱の中に肌があるか？」をチェックして、適切な処理を選んでくれるわけです。
+
+---
+
+## 関連記事
+- [プロジェクトコンセプト（背景）](file:///home/kafka/projects/fit/docs/note/project_concept.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~（次のステップ）](file:///home/kafka/projects/fit/docs/note/rbf_intuition.md)
+- [靴が「くしゃっ」とならない理由：ウェイト統合（応用編）](file:///home/kafka/projects/fit/docs/note/consolidation_intuition.md)
