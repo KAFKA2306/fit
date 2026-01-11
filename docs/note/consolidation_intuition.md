@@ -23,11 +23,14 @@
 ---
 
 ## 関連記事
-- [透明な「糸」の話：ウェイト転送（基本概念）](weights_intuition.md)
+- [プロジェクトコンセプト（背景）](project_concept.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~（次のステップ）](rbf_intuition.md)
+- [透明な「糸」の話：ウェイト転送](weights_intuition.md)
 - [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](obb_intuition.md)
 
 ---
 
 ## ナビゲーション
 - [ドキュメント目次](../README.md)
+- [靴が「くしゃっ」とならない理由：ウェイト統合（応用編）](consolidation_intuition.md)
 - [技術解説 (Math Guide)](../math/weights.md)

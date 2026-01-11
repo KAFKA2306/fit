@@ -44,12 +44,14 @@ RBFは、「ゴムのシート」をイメージすると分かりやすいで�
 ---
 
 ## 関連記事
+- [プロジェクトコンセプト（背景）](project_concept.md)
 - [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](obb_intuition.md)
-- [透明な「糸」の話：ウェイト転送（次のステップ）](weights_intuition.md)
+- [透明な「糸」の話：ウェイト転送](weights_intuition.md)
 - [「ギザギザ」を消す技術：スムージング](smoothing_intuition.md)
 
 ---
 
 ## ナビゲーション
 - [ドキュメント目次](../README.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~（次のステップ）](rbf_intuition.md)
 - [技術解説 (Math Guide)](../math/geometry.md)

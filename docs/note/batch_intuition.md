@@ -27,10 +27,11 @@
 
 ## ナビゲーション
 - [ドキュメント目次](../README.md)
-- [プロジェクトコンセプト](project_concept.md)
+- [プロジェクトコンセプト（背景）](project_concept.md)
 - [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](obb_intuition.md)
-- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~](rbf_intuition.md)
+- [RBF（放射基底関数）って何？ ~なぜ衣装が「ふわっと」フィットするのか~（次のステップ）](rbf_intuition.md)
 - [透明な「糸」の話：ウェイト転送](weights_intuition.md)
-- [靴が「くしゃっ」とならない理由：ウェイト統合](consolidation_intuition.md)
+- [靴が「くしゃっ」とならない理由：ウェイト統合（応用編）](consolidation_intuition.md)
 - [服が「痩せる」仕組み：シェイプキー同期](shapekeys_intuition.md)
 - [「ギザギザ」を消す技術：スムージング](smoothing_intuition.md)
+- [100着を寝ている間に：バッチ処理](batch_intuition.md)

@@ -66,4 +66,5 @@
 
 ## ナビゲーション
 - [ドキュメント目次](../README.md)
+- [自動仕分けの魔法：硬いモノと柔らかいモノ（OBB判定）](obb_intuition.md)
 - [技術解説 (Math Guide)](../math/geometry.md)
