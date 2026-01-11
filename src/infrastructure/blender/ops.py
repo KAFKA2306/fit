@@ -216,10 +216,9 @@ def apply_blend_shape_settings(
         shape_name = setting.get("name")
         if shape_name not in mesh_obj.data.shape_keys.key_blocks:
             temp_shape_key_name = f"{shape_name}_temp"
-            if temp_shape_key_name not in mesh_obj.data.shape_keys.key_blocks:
-                if not ignore_missing_shape_keys:
-                    print(f"Required shape key does not exist: {shape_name}")
-                    return False
+            if temp_shape_key_name not in mesh_obj.data.shape_keys.key_blocks and not ignore_missing_shape_keys:
+                print(f"Required shape key does not exist: {shape_name}")
+                return False
     for setting in blend_shape_settings:
         shape_name = setting.get("name")
         shape_value = setting.get("value", 0.0)
@@ -313,10 +312,7 @@ def inverse_bone_deform_all_vertices(armature_obj, mesh_obj):
                     bone_matrix = pose_bone.matrix @ bone.matrix_local.inverted()
                     combined_matrix += bone_matrix * weight
                     total_weight += weight
-        if total_weight > 0:
-            combined_matrix = combined_matrix * (1.0 / total_weight)
-        else:
-            combined_matrix = Matrix.Identity(4)
+        combined_matrix = combined_matrix * (1.0 / total_weight) if total_weight > 0 else Matrix.Identity(4)
         inverse_matrix = combined_matrix.inverted()
         rest_pose_pos = inverse_matrix @ pos
         inverse_transformed_vertices.append(rest_pose_pos)

@@ -1,24 +1,13 @@
 version: '3'
 
 tasks:
-  sync:
-    desc: Install dependencies
-    cmds:
-      - uv sync
-
   check:
     desc: Run lint and format checks
     cmds:
-      - uv run ruff check src
+      - uv run ruff check src --fix
       - uv run ruff format src
 
-  compile:
-    desc: Alias for check
-    cmds:
-      - task: check
-
   run:
-
     desc: Run Outfit Retargeting
     cmds:
       - |

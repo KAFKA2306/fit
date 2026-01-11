@@ -1,88 +1,81 @@
-![System Overview](docs/images/system_overview.png)
+# Outfit Retargeting System
 
-# 👗 Outfit Retargeting System
-
-Blender上で素体メッシュに合わせて衣装モデルを自動的に調整・フィッティングする高度な自動リターゲットシステム。
+Blenderにおいて素体メッシュに合わせて衣装モデルを自動的に調整およびフィッティングする高度な自動リターゲットシステム。
 
 ---
 
-## 🚀 主な機能
+## 主な機能
 
-- 自動フィッティング: "ただの移動"ではなく、OBB(箱)とSVD(回転)を使って、衣装を素体に「賢く」重ね合わせます。
-- 高度な変形: RBF(弾性補間)を使い、まるで布が引っ張られるように自然にフィットさせます。
-- ウェイト転送: 素体の動き（ボーンウェイト）を、衣装へ自動的にコピーし、破綻を防ぎます。
-- メッシュ最適化: エッジを自動分割し、変形によるカクつきを防ぎます。
-- シェイプキー同期: 素体が痩せれば衣装も痩せる。体型変更に完全追従します。
-- Unity連携強化: 標準出力によるリアルタイム進捗表示と、`sys.stdout`バッファリング対策済み。
-- クラッシュ対策: エラー発生時に、その瞬間のシーンを`_error.blend`として自動保存します。
-
----
-
-## 🛠 必要環境
-
-- Blender 4.0+
-
+- 自動フィッティング: OBB（指向性境界箱）およびSVD（特異値分解）を用いて衣装を素体に対して最適に配置。
+- 高度な変形: RBF（放射基底関数）による弾性補間を用い、自然な形状変形を実現。
+- ウェイト転送: 素体のボーンウェイトを衣装へ自動転送し、動作時の形状破綻を防止。
+- メッシュ最適化: エッジの自動分割により、変形時の視覚的な品質を維持。
+- シェイプキー同期: 素体の体型変化に衣装のシェイプキーを完全追従。
+- システム連携: 標準出力による進捗表示およびバッファリング対策を実施。
+- クラッシュ対策: 異常終了時に現状のシーンを _error.blend として自動保存。
 
 ---
 
-## 📦 インストール
+## 最小要件
+
+- Blender 4.0 以上
+
+---
+
+## セットアップ
 
 ```bash
-uv sync
+task sync
 ```
 
 ---
 
-## 📖 使用方法
+## 実行方法
 
 ```bash
-# Taskfileを使用して実行
 task run
 ```
 
 ---
 
-## 📂 プロジェクト構造
+## プロジェクト構造
 
-### Core Logic
+### コアロジック
 
-#### Application Layer (`application/`)
-- `retargeter.py` - パイプライン制御・ユースケース
-- `batch.py` - バッチ処理エントリポイント
+#### アプリケーション層 (src/application/)
+- retargeter.py: パイプライン制御およびユースケースの実装
+- batch.py: バッチ処理のエントリポイント
 
-#### Domain Layer (`domain/`)
-- `models.py` - データモデル・設定定義
+#### ドメイン層 (src/domain/)
+- models.py: データモデルおよび設定の定義
 
-#### Infrastructure Layer (`infrastructure/`)
-- `blender/` - Blender依存の具体的な実装
-  - `ops.py` - 基本的なBlender操作
-  - `mesh.py` - メッシュ編集・クリーンアップ
-  - `armature.py` - アーマチュア・ボーン操作
-  - `weights.py` - ウェイト転送・計算
-  - `geometry.py` - 数学・幾何計算 (SVD, RBF)
-  - `deformation.py` - メッシュ変形ロジック
-  - `blendshapes.py` - シェイプキーツール
+#### インフラストラクチャ層 (src/infrastructure/)
+- blender/: Blender依存の具体実装
+  - ops.py: 基本的な操作
+  - mesh.py: メッシュ編集およびクリーンアップ
+  - armature.py: アーマチュアおよびボーン操作
+  - weights.py: ウェイト計算および転送
+  - geometry.py: 数学的計算（SVD, RBF）
+  - deformation.py: メッシュ変形ロジック
+  - blendshapes.py: シェイプキー制御
 
-
-
-### [Documentation (docs/)](docs/README.md)
-- [Architecture](docs/architecture/overview.md) - システム構成・フロー
-- [Math Guide](docs/math/geometry.md) - 使用されている数学アルゴリズムの解説
+### ドキュメント (docs/)
+- Architecture: システム構成およびフロー
+- Math Guide: 数学アルゴリズムの解説
 
 ---
 
-## 📜 ライセンス
+## ライセンス
 
-本プロジェクトは **GNU General Public License v3.0 (GPLv3)** の下で公開されています。
-詳細は [LICENSE](LICENSE) ファイルをご確認ください。
+本プロジェクトは GNU General Public License v3.0 (GPLv3) の下で公開されています。
+詳細は LICENSE ファイルを参照してください。
 
 ---
 
-## 🛠 開発者向け
+## 開発
 
-### リンター & フォーマッタ (Ruff)
+### 静的解析およびフォーマット
 
 ```bash
-uv run ruff check src/  # チェック
-uv run ruff format src/ # 整形
+task check
 ```

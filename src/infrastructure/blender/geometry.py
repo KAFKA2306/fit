@@ -58,9 +58,7 @@ def point_in_triangle2d(p: Vector, a: Vector, b: Vector, c: Vector) -> bool:
     if pab * pbc < 0:
         return False
     pca = cross2d(p - c, a - c)
-    if pab * pca < 0:
-        return False
-    return True
+    return not pab * pca < 0
 
 
 def signed_2d_tri_area(a: Vector, b: Vector, c: Vector) -> float:
@@ -161,9 +159,7 @@ def intersect_triangle_triangle(t1: list[Vector], t2: list[Vector]) -> bool:
     s2 = [d.dot(p) for p in pts2]
     seg1_min, seg1_max = min(s1), max(s1)
     seg2_min, seg2_max = min(s2), max(s2)
-    if seg1_max < seg2_min or seg2_max < seg1_min:
-        return False
-    return True
+    return not (seg1_max < seg2_min or seg2_max < seg1_min)
 
 
 def calculate_optimal_rigid_transform(source_points, target_points):
@@ -303,17 +299,15 @@ def batch_process_vertices_with_custom_range(
         field_points = all_field_points[step].copy()
         delta_positions = all_delta_positions[step].copy()
         original_delta_positions = all_delta_positions[step]
-        if start_value != step_start:
-            if start_value >= step_start + 0.00001:
-                adjustment_factor = (start_value - step_start) / step_size
-                adjustment_delta = original_delta_positions * adjustment_factor
-                field_points += adjustment_delta
-                delta_positions -= adjustment_delta
-        if end_value != step_end:
-            if end_value <= step_end - 0.00001:
-                adjustment_factor = (step_end - end_value) / step_size
-                adjustment_delta = original_delta_positions * adjustment_factor
-                delta_positions -= adjustment_delta
+        if start_value != step_start and start_value >= step_start + 0.00001:
+            adjustment_factor = (start_value - step_start) / step_size
+            adjustment_delta = original_delta_positions * adjustment_factor
+            field_points += adjustment_delta
+            delta_positions -= adjustment_delta
+        if end_value != step_end and end_value <= step_end - 0.00001:
+            adjustment_factor = (step_end - end_value) / step_size
+            adjustment_delta = original_delta_positions * adjustment_factor
+            delta_positions -= adjustment_delta
         kdtree = cKDTree(field_points, balanced_tree=False, compact_nodes=False)
         step_displacements = np.zeros((num_vertices, 3))
         for start_idx in range(0, num_vertices, batch_size):

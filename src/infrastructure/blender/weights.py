@@ -85,9 +85,8 @@ def remove_empty_vertex_groups(mesh_obj: bpy.types.Object) -> None:
                 if g.weight > 0:
                     group_vertex_info[g.group].append(g.weight)
         for group_idx, weights in group_vertex_info.items():
-            if len(weights) <= 4 and len(weights) > 0:
-                if all(w <= 0.01 for w in weights):
-                    used_vertex_groups[group_idx] = False
+            if 0 < len(weights) <= 4 and all(w <= 0.01 for w in weights):
+                used_vertex_groups[group_idx] = False
     groups_to_remove = []
     for i, used in used_vertex_groups.items():
         if not used:
@@ -229,24 +228,28 @@ def process_missing_bone_weights(
             if should_preserve:
                 continue
         parent_bone = parent_map.get(bone_name)
-        if parent_bone and parent_bone in clothing_bone_names:
-            if bone_name in base_mesh.vertex_groups and parent_bone in base_mesh.vertex_groups:
-                bone_group = base_mesh.vertex_groups[bone_name]
-                parent_group = base_mesh.vertex_groups[parent_bone]
-                for vert in base_mesh.data.vertices:
-                    bone_weight = 0.0
+        if (
+            parent_bone
+            and parent_bone in clothing_bone_names
+            and bone_name in base_mesh.vertex_groups
+            and parent_bone in base_mesh.vertex_groups
+        ):
+            bone_group = base_mesh.vertex_groups[bone_name]
+            parent_group = base_mesh.vertex_groups[parent_bone]
+            for vert in base_mesh.data.vertices:
+                bone_weight = 0.0
+                for g in vert.groups:
+                    if g.group == bone_group.index:
+                        bone_weight = g.weight
+                        break
+                if bone_weight > 0:
+                    parent_weight = 0.0
                     for g in vert.groups:
-                        if g.group == bone_group.index:
-                            bone_weight = g.weight
+                        if g.group == parent_group.index:
+                            parent_weight = g.weight
                             break
-                    if bone_weight > 0:
-                        parent_weight = 0.0
-                        for g in vert.groups:
-                            if g.group == parent_group.index:
-                                parent_weight = g.weight
-                                break
-                        parent_group.add([vert.index], parent_weight + bone_weight, "REPLACE")
-                base_mesh.vertex_groups.remove(bone_group)
+                    parent_group.add([vert.index], parent_weight + bone_weight, "REPLACE")
+            base_mesh.vertex_groups.remove(bone_group)
 
 
 def update_base_avatar_weights(

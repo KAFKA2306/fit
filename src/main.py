@@ -33,45 +33,17 @@ def parse_args():
     parser.add_argument("--name-conv", type=str, help="Path to bone name conversion JSON file")
     parser.add_argument("--mesh-renderers", type=str, help="Semicolon-separated list of meshObject,parentObject pairs")
     parser.add_argument("--shape-name-file", type=str, help="Path to JSON file containing BlendShape names per mesh")
-    argv = sys.argv
-    if "--" in argv:
-        argv = argv[argv.index("--") + 1 :]
-    else:
-        argv = sys.argv[1:]
-    args = parser.parse_args(argv)
-    return args
+    argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else sys.argv[1:]
+    return parser.parse_args(argv)
 
 
 def main():
     sys.stdout.reconfigure(line_buffering=True)
-
     logging.basicConfig(level=logging.INFO, format="%(message)s", handlers=[logging.StreamHandler(sys.stdout)])
 
-    try:
-        args = parse_args()
-        retargeter = OutfitRetargeter()
-        retargeter.execute(args)
-    except Exception as e:
-        import bpy
-
-        logging.critical("============= Fatal Error =============")
-        logging.critical(f"Error message: {e!s}")
-        logging.critical("\n============= Full Stack Trace =============")
-        logging.exception("Exception details:")
-        logging.critical("=====================================")
-
-        try:
-            if args.output:
-                error_output = args.output.rsplit(".", 1)[0] + "_error.blend"
-            else:
-                error_output = "retarget_error.blend"
-
-            bpy.ops.wm.save_as_mainfile(filepath=error_output)
-            logging.info(f"Error scene saved to: {error_output}")
-        except Exception:
-            logging.error("Failed to save error scene.")
-
-        sys.exit(1)
+    args = parse_args()
+    retargeter = OutfitRetargeter()
+    retargeter.execute(args)
 
 
 if __name__ == "__main__":
