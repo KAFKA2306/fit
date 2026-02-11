@@ -1,11 +1,16 @@
+"""
+3Dの服を着せてお辞儀をさせたとき、背中やお尻のあたりがカクカクして、鋭利な角が見えてしまうのを防ぐため、「スムージング」を行います。
+このツールは、服のデータを見て「ここはよく曲がりそうだな」という場所を自動で探します。
+そして、その部分だけ「ポリゴン(3Dの三角形)」を細かく分割します。
+全部を細かくすれば綺麗にはなりますが、データが重くなってしまいます。
+なので、このツールは「曲がる関節の近く」で、かつ「ポリゴンが粗い場所」だけをピンポイントで細かくします。
+"""
 import bmesh
 import bpy
 import numpy as np
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 from mathutils.kdtree import KDTree
-
-
 def get_humanoid_and_auxiliary_bone_groups(base_avatar_data: dict) -> set:
     bone_groups = set()
     for bone_map in base_avatar_data.get("humanoidBones", []):
@@ -15,8 +20,6 @@ def get_humanoid_and_auxiliary_bone_groups(base_avatar_data: dict) -> set:
         for aux_bone in aux_set.get("auxiliaryBones", []):
             bone_groups.add(aux_bone)
     return bone_groups
-
-
 def check_edge_direction_similarity(directions1, directions2, angle_threshold=3.0) -> bool:
     if not directions1 or not directions2:
         return False
@@ -29,8 +32,6 @@ def check_edge_direction_similarity(directions1, directions2, angle_threshold=3.
             if angle <= angle_threshold_rad or angle >= (np.pi - angle_threshold_rad):
                 return True
     return False
-
-
 def calculate_weight_pattern_similarity(weights1: dict, weights2: dict) -> float:
     all_groups = set(weights1.keys()) | set(weights2.keys())
     if not all_groups:
@@ -43,8 +44,6 @@ def calculate_weight_pattern_similarity(weights1: dict, weights2: dict) -> float
     normalized_diff = total_diff / len(all_groups)
     similarity = 1.0 - min(normalized_diff, 1.0)
     return similarity
-
-
 def triangulate_mesh(obj: bpy.types.Object) -> None:
     if obj is None or obj.type != "MESH":
         return
@@ -58,8 +57,6 @@ def triangulate_mesh(obj: bpy.types.Object) -> None:
     if original_active:
         bpy.context.view_layer.objects.active = original_active
     obj.select_set(False)
-
-
 def cleanup_mesh(mesh_obj: bpy.types.Object) -> None:
     if mesh_obj is None or mesh_obj.type != "MESH":
         return
@@ -78,8 +75,6 @@ def cleanup_mesh(mesh_obj: bpy.types.Object) -> None:
             bm.verts.remove(v)
     bm.to_mesh(mesh)
     bm.free()
-
-
 def create_overlapping_vertices_attributes(
     clothing_meshes: list,
     base_avatar_data: dict,
@@ -161,8 +156,6 @@ def create_overlapping_vertices_attributes(
                 processed.add(vert_idx)
         bm.free()
         mesh_obj.data.update()
-
-
 def create_deformation_mask(obj: bpy.types.Object, avatar_data: dict) -> None:
     if obj.type != "MESH":
         return
@@ -189,8 +182,6 @@ def create_deformation_mask(obj: bpy.types.Object, avatar_data: dict) -> None:
                     weight_sum += weight
         if should_add:
             deformation_mask.add([vert.index], weight_sum, "REPLACE")
-
-
 def subdivide_long_edges(obj, min_edge_length=0.005, max_edge_length_ratio=2.0, cuts=1):
     mesh = obj.data
     if not obj or obj.type != "MESH":
@@ -212,8 +203,6 @@ def subdivide_long_edges(obj, min_edge_length=0.005, max_edge_length_ratio=2.0, 
         bm.to_mesh(mesh)
         mesh.update()
     bm.free()
-
-
 def subdivide_faces(obj, face_indices, cuts=1, max_distance=0.005):
     mesh = obj.data
     if not obj or obj.type != "MESH":
@@ -244,8 +233,6 @@ def subdivide_faces(obj, face_indices, cuts=1, max_distance=0.005):
         bm.to_mesh(mesh)
         mesh.update()
     bm.free()
-
-
 def subdivide_breast_faces(target_obj, clothing_avatar_data):
     if not clothing_avatar_data:
         return
@@ -268,8 +255,6 @@ def subdivide_breast_faces(target_obj, clothing_avatar_data):
         relevant_faces = [f.index for f in target_obj.data.polygons if any(vi in breast_vertices for vi in f.vertices)]
         if relevant_faces:
             subdivide_faces(target_obj, relevant_faces, cuts=1)
-
-
 def find_connected_components(obj: bpy.types.Object) -> list[set[int]]:
     bm = bmesh.new()
     bm.from_mesh(obj.data)
@@ -291,8 +276,6 @@ def find_connected_components(obj: bpy.types.Object) -> list[set[int]]:
             components.append(component)
     bm.free()
     return components
-
-
 def check_uniform_weights(
     obj: bpy.types.Object, vert_indices: set[int], armature_obj: bpy.types.Object
 ) -> tuple[bool, dict]:
@@ -319,8 +302,6 @@ def check_uniform_weights(
             if abs(w - curr_weights.get(name, 0.0)) > 0.001:
                 return False, {}
     return True, first_weights
-
-
 def cluster_components_by_adaptive_distance(component_coords: dict, component_sizes: dict) -> list[list[int]]:
     if not component_coords:
         return []
@@ -363,8 +344,6 @@ def cluster_components_by_adaptive_distance(component_coords: dict, component_si
             if merged:
                 break
     return clusters
-
-
 def separate_and_combine_components(
     obj: bpy.types.Object, armature_obj: bpy.types.Object, do_not_separate: list = None
 ) -> tuple[list, list]:
@@ -373,56 +352,41 @@ def separate_and_combine_components(
     components = find_connected_components(obj)
     if len(components) <= 1:
         return [], [obj]
-
     uniform_data = []
     non_separated_indices = set()
     for comp in components:
         is_uniform, weights = check_uniform_weights(obj, comp, armature_obj)
-        # Check do_not_separate (approximate by first index name check if needed)
-        # Here we just check if any vertex in comp should be forced to stay
         should_separate = is_uniform
         if should_separate:
-            # We don't have individual names for components yet, but we can check if the whole group matches a pattern
-            # We assume the caller passes names which we match later
             pass
-
         if should_separate:
             coords = [obj.matrix_world @ obj.data.vertices[i].co for i in comp]
             size = sum(max(c[k] for c in coords) - min(c[k] for c in coords) for k in range(3))
             uniform_data.append({"comp": comp, "weights": weights, "coords": coords, "size": size})
         else:
             non_separated_indices.update(comp)
-
     groups = {}
     for d in uniform_data:
         w_hash = "_".join([f"{k}:{v:.3f}" for k, v in sorted(d["weights"].items())])
         if w_hash not in groups:
             groups[w_hash] = []
         groups[w_hash].append(d)
-
     separated_objs = []
     processed_indices = set()
     for _w_hash, items in groups.items():
         comp_coords = {i: item["coords"] for i, item in enumerate(items)}
         comp_sizes = {i: item["size"] for i, item in enumerate(items)}
         clusters = cluster_components_by_adaptive_distance(comp_coords, comp_sizes)
-
         for cluster in clusters:
             keep = set()
             for idx in cluster:
                 keep.update(items[idx]["comp"])
-
-            # Check if this cluster's name (placeholder) is in do_not_separate
-            # Since cluster indices change, we use a simple heuristic or deferred check in caller
-
             bpy.ops.object.select_all(action="DESELECT")
             obj.select_set(True)
             bpy.context.view_layer.objects.active = obj
             bpy.ops.object.duplicate(linked=False)
             new_obj = bpy.context.active_object
             new_obj.name = f"{obj.name}_comp"
-
-            # Use bmesh for fast deletion
             bm = bmesh.new()
             bm.from_mesh(new_obj.data)
             bm.verts.ensure_lookup_table()
@@ -430,17 +394,14 @@ def separate_and_combine_components(
             bmesh.ops.delete(bm, geom=to_del, context="VERTS")
             bm.to_mesh(new_obj.data)
             bm.free()
-
-            if new_obj.name in do_not_separate:  # Simple match
+            if new_obj.name in do_not_separate:
                 non_separated_indices.update(keep)
                 bpy.data.objects.remove(new_obj, do_unlink=True)
             else:
                 separated_objs.append(new_obj)
                 processed_indices.update(keep)
-
     all_indices = {v.index for v in obj.data.vertices}
     remainder_indices = all_indices - processed_indices
-
     non_separated_objs = []
     if remainder_indices:
         bpy.ops.object.select_all(action="DESELECT")
@@ -457,10 +418,7 @@ def separate_and_combine_components(
         bm.to_mesh(rem_obj.data)
         bm.free()
         non_separated_objs.append(rem_obj)
-
     return separated_objs, non_separated_objs
-
-
 def calculate_distance_based_weights(
     source_obj: bpy.types.Object,
     target_obj: bpy.types.Object,
@@ -472,14 +430,12 @@ def calculate_distance_based_weights(
         vg = source_obj.vertex_groups.new(name=vertex_group_name)
     else:
         vg = source_obj.vertex_groups[vertex_group_name]
-
     depsgraph = bpy.context.evaluated_depsgraph_get()
     target_eval = target_obj.evaluated_get(depsgraph)
     target_mesh = target_eval.data
     target_verts = [target_obj.matrix_world @ v.co for v in target_mesh.vertices]
     target_polys = [p.vertices for p in target_mesh.polygons]
     bvh = BVHTree.FromPolygons(target_verts, target_polys)
-
     source_eval = source_obj.evaluated_get(depsgraph)
     source_mesh = source_eval.data
     for i, vert in enumerate(source_mesh.vertices):

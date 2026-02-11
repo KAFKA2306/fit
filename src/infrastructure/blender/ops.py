@@ -1,13 +1,18 @@
+"""
+3D空間での「位置」「回転」「拡大縮小」は、すべて「行列(Matrix)」という数学の言葉で表されます。
+アバターがポーズを取った状態で衣装を着せると、元のポーズに戻ったときに衣装がねじれてしまいます。
+これを防ぐため、「今のポーズの影響を打ち消す」計算を行います。これが「逆行列」です。
+「右に回った」の逆である「左に回る」を掛け合わせることで、数学的に「回転しなかったこと」にするのです。
+`ops.py` には、こうした複雑な数学的処理が詰め込まれていますが、
+目的はあくまで「人間が直感的に期待する動き」をコンピュータに理解させることです。
+"""
 import json
 import math
 import os
-
 import bpy
 import mathutils
 import numpy as np
 from mathutils import Matrix
-
-
 def get_shallowest_bone(armature: bpy.types.Object, avatar_data: dict = None) -> str:
     if not armature or armature.type != "ARMATURE":
         return None
@@ -34,8 +39,6 @@ def get_shallowest_bone(armature: bpy.types.Object, avatar_data: dict = None) ->
                         return root_bone.name
                     current = current.parent
     return root_bones[0].name
-
-
 def record_armature_info(
     clothing_armature: bpy.types.Object, clothing_meshes: list, clothing_avatar_data: dict, record_key: str, cache: dict
 ) -> None:
@@ -49,8 +52,6 @@ def record_armature_info(
         "shallowest_bone": shallowest_bone,
         "mesh_names": mesh_names,
     }
-
-
 def export_armature_record_to_json(output_path: str, cache: dict) -> None:
     record = cache.get("armature_record")
     if not record:
@@ -58,8 +59,6 @@ def export_armature_record_to_json(output_path: str, cache: dict) -> None:
     json_output_path = output_path.rsplit(".", 1)[0] + "_armature_info.json"
     with open(json_output_path, "w", encoding="utf-8") as f:
         json.dump(record, f, indent=2, ensure_ascii=False)
-
-
 def apply_y_rotation_to_bone(armature_obj: bpy.types.Object, bone_name: str, rotation_degrees: float) -> None:
     if bone_name and bone_name in armature_obj.pose.bones:
         bone = armature_obj.pose.bones[bone_name]
@@ -74,8 +73,6 @@ def apply_y_rotation_to_bone(armature_obj: bpy.types.Object, bone_name: str, rot
             @ offset_matrix
             @ current_world_matrix
         )
-
-
 def apply_y_rotation_to_leg_bones(
     armature: bpy.types.Object, avatar_data: dict, left_rotation_degrees: float, right_rotation_degrees: float
 ) -> None:
@@ -88,8 +85,6 @@ def apply_y_rotation_to_leg_bones(
             right_upper_leg_bone = bone_map.get("boneName")
     apply_y_rotation_to_bone(armature, left_upper_leg_bone, left_rotation_degrees)
     apply_y_rotation_to_bone(armature, right_upper_leg_bone, right_rotation_degrees)
-
-
 def save_pose_state(armature_obj: bpy.types.Object) -> dict:
     if not armature_obj or armature_obj.type != "ARMATURE":
         return None
@@ -103,8 +98,6 @@ def save_pose_state(armature_obj: bpy.types.Object) -> dict:
             "scale": bone.scale.copy(),
         }
     return pose_state
-
-
 def restore_pose_state(armature_obj: bpy.types.Object, pose_state: dict) -> None:
     if not armature_obj or armature_obj.type != "ARMATURE" or not pose_state:
         return
@@ -117,24 +110,18 @@ def restore_pose_state(armature_obj: bpy.types.Object, pose_state: dict) -> None
             bone.rotation_quaternion = state["rotation_quaternion"]
             bone.scale = state["scale"]
     bpy.context.view_layer.update()
-
-
 def build_bone_hierarchy(bone_node: dict, bone_parents: dict[str, str], current_path: list):
     bone_name = bone_node["name"]
     for child in bone_node.get("children", []):
         child_name = child["name"]
         bone_parents[child_name] = bone_name
         build_bone_hierarchy(child, bone_parents, [*current_path, bone_name])
-
-
 def get_humanoid_bone_hierarchy(avatar_data: dict) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
     bone_parents = {}
     build_bone_hierarchy(avatar_data["boneHierarchy"], bone_parents, [])
     humanoid_to_bone = {bone_map["humanoidBoneName"]: bone_map["boneName"] for bone_map in avatar_data["humanoidBones"]}
     bone_to_humanoid = {bone_map["boneName"]: bone_map["humanoidBoneName"] for bone_map in avatar_data["humanoidBones"]}
     return bone_parents, humanoid_to_bone, bone_to_humanoid
-
-
 def apply_pose_from_json(armature_obj: bpy.types.Object, filepath: str, avatar_data: dict) -> None:
     if not armature_obj or armature_obj.type != "ARMATURE":
         return
@@ -142,13 +129,10 @@ def apply_pose_from_json(armature_obj: bpy.types.Object, filepath: str, avatar_d
         return
     with open(filepath, encoding="utf-8") as f:
         pose_data = json.load(f)
-
     bone_parents, humanoid_to_bone, bone_to_humanoid = get_humanoid_bone_hierarchy(avatar_data)
-
     def get_bone_hierarchy_order():
         order = []
         visited = set()
-
         def add_bone_and_children(humanoid_bone):
             if humanoid_bone in visited:
                 return
@@ -157,11 +141,9 @@ def apply_pose_from_json(armature_obj: bpy.types.Object, filepath: str, avatar_d
             for child_bone, parent_bone in bone_parents.items():
                 if parent_bone == humanoid_bone and child_bone not in visited:
                     add_bone_and_children(child_bone)
-
         if "Hips" in humanoid_to_bone:
             add_bone_and_children(humanoid_to_bone["Hips"])
         return order
-
     bone_order = get_bone_hierarchy_order()
     original_bone_data = {}
     for humanoid_bone, bone_name in humanoid_to_bone.items():
@@ -170,26 +152,21 @@ def apply_pose_from_json(armature_obj: bpy.types.Object, filepath: str, avatar_d
             original_bone_data[humanoid_bone] = {
                 "matrix": bone.matrix.copy(),
             }
-
     for bone_name in bone_order:
         if bone_name not in armature_obj.pose.bones:
             continue
         humanoid_bone = bone_to_humanoid.get(bone_name)
         if not humanoid_bone or humanoid_bone not in pose_data:
             continue
-
         bone = armature_obj.pose.bones[bone_name]
         original_data = original_bone_data.get(humanoid_bone)
         if not original_data:
             continue
-
         current_world_matrix = armature_obj.matrix_world @ original_data["matrix"]
         delta_matrix = Matrix(pose_data[humanoid_bone]["delta_matrix"])
         combined_matrix = delta_matrix @ current_world_matrix
         bone.matrix = armature_obj.matrix_world.inverted() @ combined_matrix
         bpy.context.view_layer.update()
-
-
 def save_shape_key_state(mesh_obj: bpy.types.Object) -> dict:
     if not mesh_obj or not mesh_obj.data.shape_keys:
         return {}
@@ -197,16 +174,12 @@ def save_shape_key_state(mesh_obj: bpy.types.Object) -> dict:
     for key_block in mesh_obj.data.shape_keys.key_blocks:
         shape_key_state[key_block.name] = key_block.value
     return shape_key_state
-
-
 def restore_shape_key_state(mesh_obj: bpy.types.Object, shape_key_state: dict) -> None:
     if not mesh_obj or not mesh_obj.data.shape_keys or not shape_key_state:
         return
     for key_name, value in shape_key_state.items():
         if key_name in mesh_obj.data.shape_keys.key_blocks:
             mesh_obj.data.shape_keys.key_blocks[key_name].value = value
-
-
 def apply_blend_shape_settings(
     mesh_obj: bpy.types.Object, blend_shape_settings: list, ignore_missing_shape_keys: bool = True
 ) -> bool:
@@ -229,28 +202,18 @@ def apply_blend_shape_settings(
             if temp_shape_key_name in mesh_obj.data.shape_keys.key_blocks:
                 mesh_obj.data.shape_keys.key_blocks[temp_shape_key_name].value = shape_value
     return True
-
-
 def store_pose_globally(armature_obj: bpy.types.Object, cache: dict) -> None:
     cache["global_pose"] = save_pose_state(armature_obj)
-
-
 def restore_global_pose(armature_obj: bpy.types.Object, cache: dict) -> None:
     pose = cache.get("global_pose")
     if pose:
         restore_pose_state(armature_obj, pose)
-
-
 def store_current_pose_as_previous(armature_obj: bpy.types.Object, cache: dict) -> None:
     cache["previous_pose"] = save_pose_state(armature_obj)
-
-
 def restore_previous_pose(armature_obj: bpy.types.Object, cache: dict) -> None:
     pose = cache.get("previous_pose")
     if pose:
         restore_pose_state(armature_obj, pose)
-
-
 def get_vertex_groups_and_weights(mesh_obj, vertex_index):
     groups = {}
     vertex = mesh_obj.data.vertices[vertex_index]
@@ -258,15 +221,11 @@ def get_vertex_groups_and_weights(mesh_obj, vertex_index):
         group_name = mesh_obj.vertex_groups[g.group].name
         groups[group_name] = g.weight
     return groups
-
-
 def get_armature_from_modifier(mesh_obj):
     for modifier in mesh_obj.modifiers:
         if modifier.type == "ARMATURE":
             return modifier.object
     return None
-
-
 def calculate_inverse_pose_matrix(mesh_obj, armature_obj, vertex_index):
     weights = get_vertex_groups_and_weights(mesh_obj, vertex_index)
     if not weights:
@@ -290,8 +249,6 @@ def calculate_inverse_pose_matrix(mesh_obj, armature_obj, vertex_index):
     if total_weight > 0:
         final_matrix = final_matrix * (1.0 / total_weight)
     return final_matrix.inverted()
-
-
 def inverse_bone_deform_all_vertices(armature_obj, mesh_obj):
     vertices = [v.co.copy() for v in mesh_obj.data.vertices]
     inverse_transformed_vertices = []
@@ -328,8 +285,6 @@ def inverse_bone_deform_all_vertices(armature_obj, mesh_obj):
         mesh_obj.data.vertices[vertex_index].co = pos
     result = np.array([[v[0], v[1], v[2]] for v in inverse_transformed_vertices])
     return result
-
-
 def get_child_bones_recursive(bone_name: str, armature_obj: bpy.types.Object, clothing_avatar_data: dict = None) -> set:
     children = set()
     if bone_name not in armature_obj.data.bones:
@@ -346,8 +301,6 @@ def get_child_bones_recursive(bone_name: str, armature_obj: bpy.types.Object, cl
         children.add(child.name)
         children.update(get_child_bones_recursive(child.name, armature_obj, clothing_avatar_data))
     return children
-
-
 def create_blendshape_mask(target_obj, mask_bones, clothing_avatar_data, field_name="", store_debug_mask=True):
     mask_weights = np.zeros(len(target_obj.data.vertices))
     armature_obj = None

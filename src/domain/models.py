@@ -1,7 +1,13 @@
+"""
+システム全体で使う「言葉」の定義です。
+ここで決めたルールに従って、すべてのプログラムが会話します。
+「設定ファイルには何を書くべきか」「衣装データには何が含まれているか」といったルールを厳格に定めています。
+これにより、プログラマーが「あれ、これって文字列だっけ?数字だっけ?」と迷うことがなくなります。
+このファイルには、データの構造(Pydanticモデル)と、成功するために必要な定数(骨の名前リストなど)だけが書かれています。
+余計な処理は書かず、純粋な「定義書」としての役割に徹しています。
+"""
 from typing import Any
-
 from pydantic import BaseModel, ConfigDict
-
 LEG_FOOT_CHEST_BONES = {
     "RightUpperLeg",
     "LeftLowerLeg",
@@ -32,7 +38,6 @@ LEG_FOOT_CHEST_BONES = {
     "RightFootLittleIntermediate",
     "RightFootLittleDistal",
 }
-
 RIGHT_GROUP_FINGERS = {
     "LeftThumbIntermediate",
     "LeftThumbDistal",
@@ -47,7 +52,6 @@ RIGHT_GROUP_FINGERS = {
     "RightLittleIntermediate",
     "RightLittleDistal",
 }
-
 LEFT_GROUP_FINGERS = {
     "LeftIndexIntermediate",
     "LeftIndexDistal",
@@ -58,14 +62,10 @@ LEFT_GROUP_FINGERS = {
     "RightRingIntermediate",
     "RightRingDistal",
 }
-
 EXCLUDED_BONES = {"RightShoulder", "LeftUpperArm", "RightUpperArm", "RightLowerArm", "LeftHand", "RightHand"}
 IGNORED_BONES = {"Head"}
-
-
 class RetargetConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
-
     base_fbx: str
     input_fbx: str
     output_fbx: str
@@ -87,8 +87,6 @@ class RetargetConfig(BaseModel):
     no_subdivision: bool = False
     no_triangle: bool = False
     field_data: str | None = None
-
-
 class BatchConfig(BaseModel):
     blender_exe: str = "blender"
     input_dir: str = "Assets/HB_shop"
@@ -96,11 +94,8 @@ class BatchConfig(BaseModel):
     base_fbx: str = "Assets/OutfitRetargetingSystem/Editor/Template.fbx"
     config_path: str = "Assets/OutfitRetargetingSystem/Editor/config_shinano2template.json"
     init_pose: str = "Assets/OutfitRetargetingSystem/Editor/pose_basis_template.json"
-
-
 class RetargetContext(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
-
     config: RetargetConfig
     base_mesh: Any = None
     base_armature: Any = None
