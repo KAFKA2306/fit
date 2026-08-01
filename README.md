@@ -1,26 +1,28 @@
-# Outfit Retargeting System
+# fit — Blender衣装リターゲット研究基盤
 
-Blenderにおいて素体メッシュに合わせて衣装モデルを自動的に調整およびフィッティングする高度な自動リターゲットシステム。
+**リポジトリ:** https://github.com/KAFKA2306/fit
 
----
+Blender上で、衣装メッシュを別の素体へ配置・変形し、ウェイトやShape Keyの転送を補助するバッチ型リターゲットシステムです。
 
-## 主な機能
+OBB、SVD、RBFなどの幾何処理を使った候補生成を行いますが、自動処理だけで身体への完全なフィット、貫通のなさ、販売品質、VRChat互換性を保証するものではありません。
 
-- 自動フィッティング: OBB（指向性境界箱）およびSVD（特異値分解）を用いて衣装を素体に対して最適に配置。
-- 高度な変形: RBF（放射基底関数）による弾性補間を用い、自然な形状変形を実現。
-- ウェイト転送: 素体のボーンウェイトを衣装へ自動転送し、動作時の形状破綻を防止。
-- メッシュ最適化: エッジの自動分割により、変形時の視覚的な品質を維持。
-- シェイプキー同期: 素体の体型変化に衣装のシェイプキーを完全追従。
-- システム連携: 標準出力による進捗表示およびバッファリング対策を実施。
-- クラッシュ対策: 異常終了時に現状のシーンを _error.blend として自動保存。
+## 主な処理
 
----
+- OBBとSVDによる初期位置合わせ
+- RBFを使った形状変形の試作
+- アバターから衣装へのウェイト転送
+- メッシュの分割・整理
+- Shape Key同期の補助
+- バッチ実行と進捗ログ
+- 異常終了時のシーン保存
 
-## 最小要件
+## 必要環境
 
-- Blender 4.0 以上
+```text
+Blender 4.0以上
+```
 
----
+実際に検証したBlender版は実行ログへ保存してください。Blender Python APIやモディファイア挙動は版によって変わります。
 
 ## セットアップ
 
@@ -28,56 +30,96 @@ Blenderにおいて素体メッシュに合わせて衣装モデルを自動的�
 task sync
 ```
 
----
-
-## 実行方法
+## 実行
 
 ```bash
 task run
 ```
 
----
+タスクが入力・出力するファイル、Blender実行パス、設定値は`Taskfile`と設定ファイルを確認してください。
 
-## プロジェクト構造
+## 処理の流れ
 
-### コアロジック
+```text
+素体と衣装を読み込む
+  → スケール・座標系・基準ポーズを検証
+  → 初期位置合わせ
+  → 形状変形
+  → メッシュ整理
+  → ウェイト転送
+  → Shape Key候補を生成
+  → 監査結果と.blendを保存
+  → 人間が外観・ポーズを確認
+```
 
-#### アプリケーション層 (src/application/)
-- retargeter.py: パイプライン制御およびユースケースの実装
-- batch.py: バッチ処理のエントリポイント
+## 主な構成
 
-#### ドメイン層 (src/domain/)
-- models.py: データモデルおよび設定の定義
+```text
+src/
+├── application/
+│   ├── retargeter.py      # パイプライン制御
+│   └── batch.py           # バッチ入口
+├── domain/
+│   └── models.py          # 設定・データモデル
+└── infrastructure/
+    └── blender/
+        ├── ops.py
+        ├── mesh.py
+        ├── armature.py
+        ├── weights.py
+        ├── geometry.py
+        ├── deformation.py
+        └── blendshapes.py
+docs/
+```
 
-#### インフラストラクチャ層 (src/infrastructure/)
-- blender/: Blender依存の具体実装
-  - ops.py: 基本的な操作
-  - mesh.py: メッシュ編集およびクリーンアップ
-  - armature.py: アーマチュアおよびボーン操作
-  - weights.py: ウェイト計算および転送
-  - geometry.py: 数学的計算（SVD, RBF）
-  - deformation.py: メッシュ変形ロジック
-  - blendshapes.py: シェイプキー制御
+ドキュメント:
 
-### ドキュメント (docs/)
-- [ドキュメント目次](file:///home/kafka/projects/fit/docs/README.md)
-- [Architecture](file:///home/kafka/projects/fit/docs/architecture/overview.md): システム構成およびフロー
-- [Math Guide](file:///home/kafka/projects/fit/docs/math/geometry.md): 数学アルゴリズムの解説
-- [直感シリーズ (Intuition Series)](file:///home/kafka/projects/fit/docs/note/project_concept.md): 各機能の直感的解説
+- [ドキュメント目次](docs/README.md)
+- [アーキテクチャ](docs/architecture/overview.md)
+- [幾何処理](docs/math/geometry.md)
+- [プロジェクト概念](docs/note/project_concept.md)
 
----
+以前のREADMEにあった`file:///home/...`リンクは他の環境で開けないため、相対リンクへ修正しました。
 
-## ライセンス
+## 変形前に確認すること
 
-本プロジェクトは GNU General Public License v3.0 (GPLv3) の下で公開されています。
-詳細は LICENSE ファイルを参照してください。
+- 素体と衣装の単位・スケール
+- Armature Transform
+- 基準ポーズ
+- 左右・前後・上下の座標系
+- 適用済みモディファイア
+- 頂点数とトポロジ
+- 衣装の厚みと身体からの距離
 
----
+## 変形後の監査
 
-## 開発
+- 非有限座標、重複頂点、ゼロ面積面
+- 法線と裏面
+- UVの破綻
+- 身体との貫通
+- ウェイト合計と最大ボーン影響数
+- 肩、脇、股、膝、肘の変形
+- Shape Key間の干渉
+- FBX書出し・再読込
+- Unity・VRChatでの実動作
 
-### 静的解析およびフォーマット
+## エラー保存
+
+異常終了時に`_error.blend`を保存する機能がある場合でも、必ず保存に成功するとは限りません。元ファイルを直接上書きせず、作業コピーとGit管理外の出力先を使ってください。
+
+## 静的検査
 
 ```bash
 task check
 ```
+
+静的検査の成功は、Blenderでの見た目やUnity互換性を証明しません。
+
+## ライセンス
+
+[GNU General Public License v3.0](LICENSE)
+
+第三者アバター・衣装・テクスチャの権利は、このコードのライセンスとは別です。
+
+**README最終監査:** 2026-08-01
