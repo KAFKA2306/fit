@@ -9,15 +9,11 @@ RBFは、「ゴムのシート」をイメージすると分かりやすいで�
 2. 体に密着するパーツ(布地): RBFで滑らかに変形させる(柔らかい動き)
 これにより、「ボタンは歪まないのに、生地だけが体にフィットする」という理想的な結果を自動で作っています。
 """
-
 import math
-
 import bpy
 import numpy as np
 from mathutils import Matrix, Vector
 from scipy.spatial import cKDTree
-
-
 def calculate_obb_from_points(points):
     if len(points) < 3:
         return None
@@ -37,15 +33,11 @@ def calculate_obb_from_points(points):
     projections = np.abs(np.dot(centered_points, axes))
     radii = np.max(projections, axis=0)
     return {"center": center, "axes": axes, "radii": radii}
-
-
 def calculate_obb_from_object(obj):
     depsgraph = bpy.context.evaluated_depsgraph_get()
     eval_mesh = obj.evaluated_get(depsgraph).data
     points = [obj.matrix_world @ v.co for v in eval_mesh.vertices]
     return calculate_obb_from_points(points)
-
-
 def check_obb_intersection(mesh_obj, obb):
     if obb is None:
         return False
@@ -58,12 +50,8 @@ def check_obb_intersection(mesh_obj, obb):
         if all(p <= r for p, r in zip(projs, obb["radii"], strict=False)):
             return True
     return False
-
-
 def cross2d(u: Vector, v: Vector) -> float:
     return u.y * v.x - u.x * v.y
-
-
 def point_in_triangle2d(p: Vector, a: Vector, b: Vector, c: Vector) -> bool:
     pab = cross2d(p - a, b - a)
     pbc = cross2d(p - b, c - b)
@@ -71,12 +59,8 @@ def point_in_triangle2d(p: Vector, a: Vector, b: Vector, c: Vector) -> bool:
         return False
     pca = cross2d(p - c, a - c)
     return not pab * pca < 0
-
-
 def signed_2d_tri_area(a: Vector, b: Vector, c: Vector) -> float:
     return (a.x - c.x) * (b.y - c.y) - (a.y - c.y) * (b.x - c.x)
-
-
 def test_2d_segment_segment(a: Vector, b: Vector, c: Vector, d: Vector) -> bool:
     a1 = signed_2d_tri_area(a, b, d)
     a2 = signed_2d_tri_area(a, b, c)
@@ -86,8 +70,6 @@ def test_2d_segment_segment(a: Vector, b: Vector, c: Vector, d: Vector) -> bool:
         if a3 * a4 < 0.0:
             return True
     return False
-
-
 def project_triangle_2d(triangle: list[Vector], normal: Vector) -> list[Vector]:
     if abs(normal.x) >= abs(normal.y) and abs(normal.x) >= abs(normal.z):
         return [Vector((v.y, v.z)) for v in triangle]
@@ -95,8 +77,6 @@ def project_triangle_2d(triangle: list[Vector], normal: Vector) -> list[Vector]:
         return [Vector((v.x, v.z)) for v in triangle]
     else:
         return [Vector((v.x, v.y)) for v in triangle]
-
-
 def triangle_area(triangle: list[Vector]) -> float:
     a = (triangle[1] - triangle[0]).length
     b = (triangle[2] - triangle[1]).length
@@ -105,13 +85,9 @@ def triangle_area(triangle: list[Vector]) -> float:
     area_val = max(s * (s - a) * (s - b) * (s - c), 0)
     area = math.sqrt(area_val)
     return area
-
-
 def is_degenerate_triangle(triangle: list[Vector], epsilon: float = 1e-6) -> bool:
     area = triangle_area(triangle)
     return area < epsilon
-
-
 def calc_triangle_normal(triangle: list[Vector]) -> Vector:
     v1 = triangle[1] - triangle[0]
     v2 = triangle[2] - triangle[0]
@@ -120,8 +96,6 @@ def calc_triangle_normal(triangle: list[Vector]) -> Vector:
     if length > 1e-8:
         return normal / length
     return Vector((0, 0, 0))
-
-
 def intersect_triangle_triangle(t1: list[Vector], t2: list[Vector]) -> bool:
     EPSILON2 = 1e-6
     if is_degenerate_triangle(t1, EPSILON2) or is_degenerate_triangle(t2, EPSILON2):
@@ -138,7 +112,6 @@ def intersect_triangle_triangle(t1: list[Vector], t2: list[Vector]) -> bool:
         return False
     if all(d >= 0 for d in dist2) or all(d <= 0 for d in dist2):
         return False
-
     def compute_intersection_points(triangle, dists):
         pts = []
         for i in range(3):
@@ -158,7 +131,6 @@ def intersect_triangle_triangle(t1: list[Vector], t2: list[Vector]) -> bool:
             if not any((p - q).length < 1e-8 for q in unique_pts):
                 unique_pts.append(p)
         return unique_pts
-
     pts1 = compute_intersection_points(t1, dist1)
     pts2 = compute_intersection_points(t2, dist2)
     if len(pts1) < 2 or len(pts2) < 2:
@@ -172,8 +144,6 @@ def intersect_triangle_triangle(t1: list[Vector], t2: list[Vector]) -> bool:
     seg1_min, seg1_max = min(s1), max(s1)
     seg2_min, seg2_max = min(s2), max(s2)
     return not (seg1_max < seg2_min or seg2_max < seg1_min)
-
-
 def calculate_optimal_rigid_transform(source_points, target_points):
     centroid_source = np.mean(source_points, axis=0)
     centroid_target = np.mean(target_points, axis=0)
@@ -187,12 +157,8 @@ def calculate_optimal_rigid_transform(source_points, target_points):
         R = Vt.T @ U.T
     t = centroid_target - R @ centroid_source
     return R, t
-
-
 def apply_rigid_transform_to_points(points, R, t):
     return (R @ points.T).T + t
-
-
 def calculate_optimal_similarity_transform(source_points, target_points):
     centroid_source = np.mean(source_points, axis=0)
     centroid_target = np.mean(target_points, axis=0)
@@ -209,12 +175,8 @@ def calculate_optimal_similarity_transform(source_points, target_points):
     s = trace_RSH / source_scale if source_scale > 0 else 1.0
     t = centroid_target - s * (R @ centroid_source)
     return s, R, t
-
-
 def apply_similarity_transform_to_points(points, s, R, t):
     return s * (R @ points.T).T + t
-
-
 def calculate_optimal_similarity_transform_weighted(source_points, target_points, weights):
     weights = weights / np.sum(weights) if np.sum(weights) > 0 else np.ones_like(weights) / len(weights)
     centroid_source = np.sum(source_points * weights[:, np.newaxis], axis=0)
@@ -232,8 +194,6 @@ def calculate_optimal_similarity_transform_weighted(source_points, target_points
     s = trace_RSH / source_scale if source_scale > 0 else 1.0
     t = centroid_target - s * (R @ centroid_source)
     return s, R, t
-
-
 def batch_process_vertices_multi_step(
     vertices,
     all_field_points,
@@ -276,8 +236,6 @@ def batch_process_vertices_multi_step(
         cumulative_displacements += step_displacements
     final_world_positions = np.array([target_matrix @ Vector(v) for v in vertices]) + cumulative_displacements
     return final_world_positions
-
-
 def batch_process_vertices_with_custom_range(
     vertices,
     all_field_points,
@@ -339,8 +297,6 @@ def batch_process_vertices_with_custom_range(
         cumulative_displacements += step_displacements
     final_world_positions = np.array([target_matrix @ Vector(v) for v in vertices]) + cumulative_displacements
     return final_world_positions
-
-
 def batch_process_vertices(
     vertices,
     kdtree,
@@ -378,8 +334,6 @@ def batch_process_vertices(
             world_displacement = field_matrix.to_3x3() @ Vector(displacement)
             results[start_idx + i] = batch_world[i] + world_displacement
     return results
-
-
 def get_deformation_field_multi_step(field_data_path: str, cache: dict | None = None) -> dict:
     if cache is None:
         cache = {}

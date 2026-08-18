@@ -22,16 +22,12 @@
 ---
 「数学の力を使って、手作業のような丁寧さで、衣装を自動フィッティングするシステム」 です。
 """
-
 import argparse
 import logging
 import os
 import sys
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from application.retargeter import OutfitRetargeter
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description="Outfit Retargeting System")
     parser.add_argument("--input", required=False, help="Input clothing FBX file path (optional if in config)")
@@ -60,15 +56,11 @@ def parse_args():
     parser.add_argument("--shape-name-file", type=str, help="Path to JSON file containing BlendShape names per mesh")
     argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else sys.argv[1:]
     return parser.parse_args(argv)
-
-
 def main():
     sys.stdout.reconfigure(line_buffering=True)
     logging.basicConfig(level=logging.INFO, format="%(message)s", handlers=[logging.StreamHandler(sys.stdout)])
     args = parse_args()
     retargeter = OutfitRetargeter()
     retargeter.execute(args)
-
-
 if __name__ == "__main__":
     main()

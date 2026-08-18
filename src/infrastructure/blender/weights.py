@@ -1,11 +1,7 @@
 import math
-
 import bmesh
 import bpy
-
 from infrastructure.blender import armature
-
-
 def merge_vertex_group_weights(mesh_obj: bpy.types.Object, source_group: str, target_group: str) -> None:
     if source_group not in mesh_obj.vertex_groups or target_group not in mesh_obj.vertex_groups:
         return
@@ -22,8 +18,6 @@ def merge_vertex_group_weights(mesh_obj: bpy.types.Object, source_group: str, ta
         if source_w > 0:
             mesh_obj.vertex_groups[target_group].add([vert.index], source_w + target_w, "REPLACE")
     mesh_obj.vertex_groups.remove(mesh_obj.vertex_groups[source_group])
-
-
 def process_bone_weight_consolidation(mesh_obj: bpy.types.Object, avatar_data: dict) -> None:
     upper_chest = armature.get_bone_name_from_humanoid(avatar_data, "UpperChest")
     chest = armature.get_bone_name_from_humanoid(avatar_data, "Chest")
@@ -52,21 +46,15 @@ def process_bone_weight_consolidation(mesh_obj: bpy.types.Object, avatar_data: d
                 if foot not in mesh_obj.vertex_groups:
                     mesh_obj.vertex_groups.new(name=foot)
                 merge_vertex_group_weights(mesh_obj, toe_bone, foot)
-
-
 def get_bone_parent_map(bone_hierarchy: dict) -> dict:
     parent_map = {}
-
     def traverse_hierarchy(node, parent=None):
         current_bone = node["name"]
         parent_map[current_bone] = parent
         for child in node.get("children", []):
             traverse_hierarchy(child, current_bone)
-
     traverse_hierarchy(bone_hierarchy)
     return parent_map
-
-
 def remove_empty_vertex_groups(mesh_obj: bpy.types.Object) -> None:
     if mesh_obj.type != "MESH" or not mesh_obj.vertex_groups:
         return
@@ -93,8 +81,6 @@ def remove_empty_vertex_groups(mesh_obj: bpy.types.Object) -> None:
         if group_name in mesh_obj.vertex_groups:
             mesh_obj.vertex_groups.remove(mesh_obj.vertex_groups[group_name])
     bpy.ops.object.vertex_group_normalize_all(group_select_mode="BONE_DEFORM", lock_active=False)
-
-
 def propagate_bone_weights(
     mesh_obj: bpy.types.Object, temp_group_name: str = "PropagatedWeightsTemp", max_iterations: int = 500
 ) -> str | None:
@@ -174,8 +160,6 @@ def propagate_bone_weights(
                 mesh_obj.vertex_groups[group_name].add([vert_idx], weight, "REPLACE")
     bm.free()
     return temp_group_name
-
-
 def process_missing_bone_weights(
     base_mesh: bpy.types.Object,
     clothing_armature: bpy.types.Object,
@@ -247,8 +231,6 @@ def process_missing_bone_weights(
                             break
                     parent_group.add([vert.index], parent_weight + bone_weight, "REPLACE")
             base_mesh.vertex_groups.remove(bone_group)
-
-
 def update_base_avatar_weights(
     base_mesh: bpy.types.Object,
     clothing_armature: bpy.types.Object,
@@ -259,8 +241,6 @@ def update_base_avatar_weights(
     process_missing_bone_weights(
         base_mesh, clothing_armature, base_avatar_data, clothing_avatar_data, preserve_optional_humanoid_bones
     )
-
-
 def fix_invalid_weights(mesh_obj: bpy.types.Object) -> None:
     if mesh_obj.type != "MESH":
         return
@@ -286,7 +266,6 @@ def fix_invalid_weights(mesh_obj: bpy.types.Object) -> None:
     bm.from_mesh(mesh)
     bm.verts.ensure_lookup_table()
     bm.edges.ensure_lookup_table()
-
     def get_adjacent_vertices(vert_idx: int) -> set:
         adjacent = set()
         bm_vert = bm.verts[vert_idx]
@@ -294,7 +273,6 @@ def fix_invalid_weights(mesh_obj: bpy.types.Object) -> None:
             other_vert = edge.other_vert(bm_vert)
             adjacent.add(other_vert.index)
         return adjacent
-
     def get_vertex_weights(vert_idx: int) -> dict:
         result = {}
         vert = mesh.vertices[vert_idx]
@@ -304,7 +282,6 @@ def fix_invalid_weights(mesh_obj: bpy.types.Object) -> None:
                 group_name = vertex_groups[g.group].name
                 result[group_name] = weight
         return result
-
     def has_valid_weights(vert_idx: int) -> bool:
         vert = mesh.vertices[vert_idx]
         for g in vert.groups:
@@ -312,7 +289,6 @@ def fix_invalid_weights(mesh_obj: bpy.types.Object) -> None:
             if math.isfinite(weight) and not math.isnan(weight) and weight > 0.0:
                 return True
         return False
-
     for vert_idx in vertices_without_weights:
         first_level_neighbors = get_adjacent_vertices(vert_idx)
         valid_neighbors = []
