@@ -2,10 +2,10 @@ version: '3'
 
 tasks:
   check:
-    desc: Run lint and format checks
+    desc: Run lint and format checks without modifying files
     cmds:
-      - uv run ruff check src --fix
-      - uv run ruff format src
+      - uv run ruff check src
+      - uv run ruff format --check src
 
   run:
     desc: Run Outfit Retargeting
