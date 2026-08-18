@@ -7,17 +7,11 @@ VRChatのアバターなどでは、身長を変えたり胸の大きさを変�
 あなたが「体型変更ダイヤル」を回せば、服もまるで「魔法の布」のように、そのサイズに合わせて伸縮します。
 ボタンひとつで、SサイズからXXLサイズまで自由自在に対応できる服が出来上がるのです。
 """
-
 import json
-
 import bpy
-
-
 def load_avatar_data_for_blendshape_analysis(avatar_data_path: str) -> dict:
     with open(avatar_data_path, encoding="utf-8") as f:
         return json.load(f)
-
-
 def get_blendshape_groups(avatar_data: dict) -> dict:
     groups = {}
     blend_shape_groups = avatar_data.get("blendShapeGroups", [])
@@ -26,8 +20,6 @@ def get_blendshape_groups(avatar_data: dict) -> dict:
         blend_shape_fields = group.get("blendShapeFields", [])
         groups[group_name] = blend_shape_fields
     return groups
-
-
 def get_deformation_fields_mapping(avatar_data: dict) -> tuple:
     blend_shape_fields = {}
     inverted_fields = {}
@@ -40,15 +32,11 @@ def get_deformation_fields_mapping(avatar_data: dict) -> tuple:
         if label:
             inverted_fields[label] = field
     return blend_shape_fields, inverted_fields
-
-
 def reset_shape_keys(obj: bpy.types.Object) -> None:
     if obj.data.shape_keys is not None:
         for kb in obj.data.shape_keys.key_blocks:
             if kb.name != "Basis":
                 kb.value = 0.0
-
-
 def sync_shape_key_names_from_file(clothing_meshes: list, shape_name_filepath: str) -> None:
     with open(shape_name_filepath, encoding="utf-8") as f:
         shape_name_data = json.load(f)
@@ -76,8 +64,6 @@ def sync_shape_key_names_from_file(clothing_meshes: list, shape_name_filepath: s
                     if shape_key.name == after_period:
                         shape_key.name = file_shape_name
                         break
-
-
 def process_blendshape_transitions(current_config: dict, next_config: dict) -> None:
     blendshape_settings = next_config["config_data"].get("sourceBlendShapeSettings", [])
     current_config["next_blendshape_settings"] = blendshape_settings

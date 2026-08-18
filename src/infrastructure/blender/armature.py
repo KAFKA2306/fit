@@ -6,16 +6,12 @@
 衣装が初期状態でポーズを取っている(腕を広げているなど)場合、そのままでは着せられません。
 システムは、衣装を一度「気をつけ」の姿勢(レストポーズ)に戻し、その状態で計算を行います。
 """
-
 import bmesh
 import bpy
 import numpy as np
 from mathutils import Vector
 from scipy.spatial import cKDTree
-
 from infrastructure.blender.mesh import get_humanoid_and_auxiliary_bone_groups
-
-
 def get_evaluated_mesh(obj: bpy.types.Object):
     depsgraph = bpy.context.evaluated_depsgraph_get()
     evaluated_obj = obj.evaluated_get(depsgraph)
@@ -24,8 +20,6 @@ def get_evaluated_mesh(obj: bpy.types.Object):
     bm.from_mesh(evaluated_mesh)
     bm.transform(obj.matrix_world)
     return bm
-
-
 def adjust_armature_hips_position(
     armature_obj: bpy.types.Object, target_position: Vector, clothing_avatar_data: dict
 ) -> None:
@@ -71,8 +65,6 @@ def adjust_armature_hips_position(
         if current_mode != "OBJECT":
             bpy.ops.object.mode_set(mode=current_mode)
     bpy.context.view_layer.update()
-
-
 def apply_pose_as_rest(armature: bpy.types.Object) -> None:
     original_active = bpy.context.active_object
     if not armature or armature.type != "ARMATURE":
@@ -83,8 +75,6 @@ def apply_pose_as_rest(armature: bpy.types.Object) -> None:
     bpy.ops.pose.armature_apply()
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.context.view_layer.objects.active = original_active
-
-
 def create_hinge_bone_group(obj: bpy.types.Object, armature: bpy.types.Object, avatar_data: dict) -> None:
     bone_groups = get_humanoid_and_auxiliary_bone_groups(avatar_data)
     all_deform_groups = set(bone_groups)
@@ -110,20 +100,15 @@ def create_hinge_bone_group(obj: bpy.types.Object, armature: bpy.types.Object, a
                             weight = g.weight
                             hinge_bone_group.add([index], weight, "REPLACE")
                             break
-
-
 def get_bone_name_from_humanoid(avatar_data: dict, humanoid_bone_name: str) -> str | None:
     for mapping in avatar_data.get("humanoidBones", []):
         if mapping.get("humanoidBoneName") == humanoid_bone_name:
             return mapping.get("boneName")
     return None
-
-
 def calculate_inverse_pose_matrix(
     obj: bpy.types.Object, armature_obj: bpy.types.Object, vert_idx: int
 ) -> bpy.types.mathutils.Matrix:
     from mathutils import Matrix
-
     vert = obj.data.vertices[vert_idx]
     bone_weight_sum = 0
     matrix_sum = Matrix.Zero(4)

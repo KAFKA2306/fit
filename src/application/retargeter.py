@@ -8,23 +8,17 @@
 ---
 - retargeter.py: パイプライン制御・ユースケース (execute, _run_pipeline)
 """
-
 import json
 import logging
 import os
-
 import bpy
 from mathutils import Vector
-
 from domain.models import RetargetConfig, RetargetContext
 from infrastructure.blender import armature, blendshapes, weights
 from infrastructure.blender import deformation as mesh_deformation
 from infrastructure.blender import mesh as mesh_ops
 from infrastructure.blender import ops as blender_ops
-
 logger = logging.getLogger(__name__)
-
-
 class OutfitRetargeter:
     def execute(self, args):
         config_pairs = self._load_config_pairs(args)
@@ -32,13 +26,11 @@ class OutfitRetargeter:
         for pair_index, config_pair in enumerate(config_pairs):
             context = RetargetContext(config=config_pair, pair_index=pair_index, total_pairs=total_pairs)
             self._run_pipeline(args, context)
-
     @staticmethod
     def _report_progress(progress: float, message: str = ""):
         logger.info(f"Progress: {progress:.2f}")
         if message:
             logger.info(f"Status: {message}")
-
     def _run_pipeline(self, args, ctx: RetargetContext):
         steps = [
             (self._step_initialize_scene, "Initializing Scene", 0.05),
@@ -53,10 +45,8 @@ class OutfitRetargeter:
             self._report_progress(progress_val, status_msg)
             step_func(args, ctx)
         self._report_progress(1.00, "Done")
-
     def _step_initialize_scene(self, args, ctx: RetargetContext):
         bpy.ops.wm.open_mainfile(filepath=args.base)
-
     def _step_process_avatars(self, args, ctx: RetargetContext):
         with open(ctx.config.base_avatar_data, encoding="utf-8") as f:
             ctx.base_avatar_data = json.load(f)
@@ -89,12 +79,10 @@ class OutfitRetargeter:
         if ctx.pair_index == 0 and ctx.config.name_conv:
             with open(ctx.config.name_conv, encoding="utf-8") as f:
                 ctx.name_conv_data = json.load(f)
-
     def _step_apply_initial_pose(self, args, ctx: RetargetContext):
         if ctx.config.init_pose:
             blender_ops.apply_pose_from_json(ctx.base_armature, ctx.config.init_pose, ctx.base_avatar_data)
             armature.apply_pose_as_rest(ctx.base_armature)
-
     def _step_setup_clothing(self, args, ctx: RetargetContext):
         if ctx.config.shape_name_file:
             blendshapes.sync_shape_key_names_from_file(ctx.clothing_meshes, ctx.config.shape_name_file)
@@ -110,7 +98,6 @@ class OutfitRetargeter:
             )
         for mesh_obj in ctx.clothing_meshes:
             mesh_ops.cleanup_mesh(mesh_obj)
-
     def _step_transfer_weights(self, args, ctx: RetargetContext):
         if hasattr(bpy.context.scene, "robust_weight_transfer_settings"):
             bpy.context.scene.robust_weight_transfer_settings.source_object = ctx.base_mesh
@@ -119,7 +106,6 @@ class OutfitRetargeter:
             ctx.base_mesh, ctx.clothing_armature, ctx.base_avatar_data, ctx.clothing_avatar_data
         )
         mesh_ops.create_overlapping_vertices_attributes(ctx.clothing_meshes, ctx.base_avatar_data)
-
     def _step_process_meshes(self, args, ctx: RetargetContext):
         for obj in ctx.clothing_meshes:
             armature.create_hinge_bone_group(obj, ctx.clothing_armature, ctx.clothing_avatar_data)
@@ -129,11 +115,9 @@ class OutfitRetargeter:
             weights.propagate_bone_weights(obj)
             if ctx.config.field_data:
                 mesh_deformation.retarget_mesh(obj, ctx)
-
     def _step_finalize(self, args, ctx: RetargetContext):
         if ctx.pair_index == ctx.total_pairs - 1 and ctx.config.output_fbx:
             bpy.ops.export_scene.fbx(filepath=ctx.config.output_fbx, use_selection=True)
-
     def _load_config_pairs(self, args):
         base_fbx_paths = [path.strip() for path in args.base_fbx.split(";")]
         config_paths = [path.strip() for path in args.config.split(";")]
@@ -144,13 +128,11 @@ class OutfitRetargeter:
             with open(config_path, encoding="utf-8") as f:
                 config_data = json.load(f)
             config_dir = os.path.dirname(os.path.abspath(config_path))
-
             def resolve_path(path_key):
                 p = config_data.get(path_key)
                 if p and not os.path.isabs(p):
                     return os.path.normpath(os.path.join(config_dir, p))
                 return p
-
             pair = RetargetConfig(
                 config_path=config_path,
                 config_data=config_data,
