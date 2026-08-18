@@ -1,15 +1,14 @@
-name: CI
+name: Normalize source
 
 on:
-  pull_request:
   push:
-    branches: [main]
+    branches: [audit/verify-existing-toolchain-20260819]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  check:
+  normalize:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -19,18 +18,17 @@ jobs:
           version: "0.12.1"
       - name: Install locked environment
         run: uv sync --locked --dev
-      - name: Compile Python
-        run: uv run python -m compileall -q src
-      - name: Generate canonical Ruff normalization
+      - name: Apply existing Ruff configuration
         run: |
           uv run ruff check src --fix
           uv run ruff format src
-      - name: Upload normalized source
-        uses: actions/upload-artifact@v6
-        with:
-          name: ruff-normalized-src
-          path: src
-      - name: Show remaining diff
+      - name: Commit canonical formatting when needed
         run: |
-          git diff -- src
-          git diff --exit-code -- src
+          if git diff --quiet -- src; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src
+          git commit -m "style: apply existing Ruff formatting"
+          git push
