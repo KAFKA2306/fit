@@ -21,9 +21,16 @@ jobs:
         run: uv sync --locked --dev
       - name: Compile Python
         run: uv run python -m compileall -q src
-      - name: Show canonical Ruff normalization
+      - name: Generate canonical Ruff normalization
         run: |
           uv run ruff check src --fix
           uv run ruff format src
+      - name: Upload normalized source
+        uses: actions/upload-artifact@v6
+        with:
+          name: ruff-normalized-src
+          path: src
+      - name: Show remaining diff
+        run: |
           git diff -- src
           git diff --exit-code -- src
