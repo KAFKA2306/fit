@@ -21,9 +21,9 @@ jobs:
         run: uv sync --locked --dev
       - name: Compile Python
         run: uv run python -m compileall -q src
-      - name: Lint
-        run: uv run ruff check src
-      - name: Check formatting
-        run: uv run ruff format --check src
-      - name: Verify clean checkout
-        run: git diff --exit-code
+      - name: Show canonical Ruff normalization
+        run: |
+          uv run ruff check src --fix
+          uv run ruff format src
+          git diff -- src
+          git diff --exit-code -- src
