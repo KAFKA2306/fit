@@ -108,13 +108,13 @@ docs/
 
 異常終了時に`_error.blend`を保存する機能がある場合でも、必ず保存に成功するとは限りません。元ファイルを直接上書きせず、作業コピーとGit管理外の出力先を使ってください。
 
-## 静的検査
+## Ruff
 
 ```bash
 task check
 ```
 
-`task check`はファイルを書き換えず、Ruffのlintとformat検査を実行します。静的検査の成功は、Blenderでの見た目やUnity互換性を証明しません。
+現行の`task check`はRuffの自動修正とformatを実行する保守コマンドです。変更内容は`git diff`で確認してください。Pull RequestのCIは変更されたPythonファイルだけを非破壊で検査します。Ruffの成功は、Blenderでの見た目やUnity互換性を証明しません。
 
 ## ライセンス
 
