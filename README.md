@@ -20,6 +20,9 @@ OBB、SVD、RBFなどの幾何処理を使った候補生成を行いますが�
 
 ```text
 Blender 4.0以上
+Python 3.11以上
+uv
+Task
 ```
 
 実際に検証したBlender版は実行ログへ保存してください。Blender Python APIやモディファイア挙動は版によって変わります。
@@ -27,7 +30,7 @@ Blender 4.0以上
 ## セットアップ
 
 ```bash
-task sync
+uv sync --locked
 ```
 
 ## 実行
@@ -36,7 +39,7 @@ task sync
 task run
 ```
 
-タスクが入力・出力するファイル、Blender実行パス、設定値は`Taskfile`と設定ファイルを確認してください。
+タスクが入力・出力するファイル、Blender実行パス、設定値は`Taskfile.yml`を確認してください。
 
 ## 処理の流れ
 
@@ -78,9 +81,6 @@ docs/
 - [ドキュメント目次](docs/README.md)
 - [アーキテクチャ](docs/architecture/overview.md)
 - [幾何処理](docs/math/geometry.md)
-- [プロジェクト概念](docs/note/project_concept.md)
-
-以前のREADMEにあった`file:///home/...`リンクは他の環境で開けないため、相対リンクへ修正しました。
 
 ## 変形前に確認すること
 
@@ -114,12 +114,10 @@ docs/
 task check
 ```
 
-静的検査の成功は、Blenderでの見た目やUnity互換性を証明しません。
+`task check`はファイルを書き換えず、Ruffのlintとformat検査を実行します。静的検査の成功は、Blenderでの見た目やUnity互換性を証明しません。
 
 ## ライセンス
 
 [GNU General Public License v3.0](LICENSE)
 
 第三者アバター・衣装・テクスチャの権利は、このコードのライセンスとは別です。
-
-**README最終監査:** 2026-08-01
