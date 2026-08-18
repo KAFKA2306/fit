@@ -9,26 +9,34 @@
 - 肌が入っている場合: 「布」と判断し、RBFで柔らかく変形させます。
 - 肌が入っていない場合: 「装飾品」と判断し、形を変えずに場所だけを動かします。
 """
+
 import os
+
 import bmesh
 import bpy
 import numpy as np
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
+
 from infrastructure.blender import armature, geometry
 from infrastructure.blender import mesh as mesh_ops
 from infrastructure.blender import ops as blender_ops
+
+
 class TransitionCache:
     def __init__(self):
         self.cache = {}
+
     def get_cache_key(self, blendshape_values):
         sorted_items = sorted(blendshape_values.items())
         return hash(tuple(sorted_items))
+
     def store_result(self, blendshape_values, vertices, all_blendshape_values):
         cache_key = self.get_cache_key(blendshape_values)
         if cache_key in self.cache:
             return
         self.cache[cache_key] = {"vertices": vertices.copy(), "blendshape_values": all_blendshape_values.copy()}
+
     def find_interpolation_candidates(self, target_blendshape_values, changing_blendshape, blendshape_groups=None):
         candidates = []
         group_blendshapes = set()
@@ -61,6 +69,7 @@ class TransitionCache:
                     }
                 )
         return candidates
+
     def interpolate_result(self, target_blendshape_values, changing_blendshape, blendshape_groups=None):
         candidates = self.find_interpolation_candidates(
             target_blendshape_values, changing_blendshape, blendshape_groups
@@ -83,6 +92,8 @@ class TransitionCache:
         best = min(valid_pairs, key=lambda x: x["interval"])
         t = (target_v - best["v1"]) / (best["v2"] - best["v1"])
         return best["c1"]["vertices"] + t * (best["c2"]["vertices"] - best["c1"]["vertices"])
+
+
 def process_field_deformation(
     target_obj,
     field_data_path,
@@ -133,6 +144,8 @@ def process_field_deformation(
         inv_pose = armature.calculate_inverse_pose_matrix(target_obj, clothing_armature, i)
         active_sk.data[i].co = target_obj.matrix_world.inverted() @ inv_pose @ p_vec
     return active_sk
+
+
 def find_intersecting_faces_bvh(obj):
     bm = bmesh.new()
     bm.from_mesh(obj.data)
@@ -141,6 +154,8 @@ def find_intersecting_faces_bvh(obj):
     intersections = tree.overlap(tree)
     bm.free()
     return intersections
+
+
 def retarget_mesh(obj, ctx):
     mesh_ops.cleanup_mesh(obj)
     if not ctx.config.no_subdivision and ctx.pair_index == 0:
@@ -153,6 +168,7 @@ def retarget_mesh(obj, ctx):
     config_data = {}
     if field_data_path and os.path.exists(field_data_path):
         import json
+
         with open(field_data_path) as f:
             config_data = json.load(f)
     temp_sep, _ = mesh_ops.separate_and_combine_components(obj, clothing_armature)
@@ -206,6 +222,8 @@ def retarget_mesh(obj, ctx):
             bpy.ops.object.join()
     if not ctx.config.no_triangle and ctx.pair_index == ctx.total_pairs - 1:
         mesh_ops.triangulate_mesh(obj)
+
+
 def apply_field_delta_with_rigid_transform_single(obj, field_data_path, ctx, label=None, shape_key_name=None):
     if shape_key_name is None:
         shape_key_name = label if label else "RigidTransformed"
@@ -243,6 +261,8 @@ def apply_field_delta_with_rigid_transform_single(obj, field_data_path, ctx, lab
         inv_pose = armature.calculate_inverse_pose_matrix(obj, ctx.clothing_armature, i)
         sk.data[i].co = obj.matrix_world.inverted() @ inv_pose @ world_p_vec
     return sk
+
+
 def apply_symmetric_field_delta(
     target_obj,
     field_data_path,
