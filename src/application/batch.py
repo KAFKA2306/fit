@@ -13,12 +13,17 @@
 空いた時間は、VRChatでフレンドと遊んだり、新しい改変を考えることに使ってください。
 単調な作業は、すべて機械に任せてしまいましょう。
 """
+
 import glob
 import os
 import subprocess
 from datetime import datetime
+
 from domain.models import BatchConfig
+
 SCRIPT_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "main.py")
+
+
 def main():
     config = BatchConfig()
     fbx_files = glob.glob(os.path.join(config.input_dir, "**/*.fbx"), recursive=True)
@@ -45,5 +50,7 @@ def main():
             config.init_pose,
         ]
         subprocess.run(cmd)
+
+
 if __name__ == "__main__":
     main()
