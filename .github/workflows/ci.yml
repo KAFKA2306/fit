@@ -1,34 +1,35 @@
-name: Normalize source
+name: CI
 
 on:
+  pull_request:
   push:
-    branches: [audit/verify-existing-toolchain-20260819]
+    branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  normalize:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.12.1"
       - name: Install locked environment
         run: uv sync --locked --dev
-      - name: Apply existing Ruff configuration
+      - name: Compile Python
+        run: uv run python -m compileall -q src
+      - name: Check changed Python files
+        shell: bash
         run: |
-          uv run ruff check src --fix
-          uv run ruff format src
-      - name: Commit canonical formatting when needed
-        run: |
-          if git diff --quiet -- src; then
-            exit 0
+          mapfile -t files < <(git diff --name-only HEAD^ HEAD -- '*.py')
+          if ((${#files[@]})); then
+            uv run ruff check "${files[@]}"
+            uv run ruff format --check "${files[@]}"
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src
-          git commit -m "style: apply existing Ruff formatting"
-          git push
+      - name: Verify clean checkout
+        run: git diff --exit-code
