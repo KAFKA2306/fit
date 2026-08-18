@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.1"
+      - name: Install locked environment
+        run: uv sync --locked --dev
+      - name: Compile Python
+        run: uv run python -m compileall -q src
+      - name: Lint
+        run: uv run ruff check src
+      - name: Check formatting
+        run: uv run ruff format --check src
+      - name: Verify clean checkout
+        run: git diff --exit-code
